@@ -95,6 +95,13 @@ resource "aws_security_group" "roshan_grp_r" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   } 
+   ingress {
+    description = "Mysql server"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  } 
   egress {
     from_port   = 0
     to_port     = 0
