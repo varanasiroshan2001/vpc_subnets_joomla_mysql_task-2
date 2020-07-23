@@ -75,8 +75,8 @@ resource "aws_route_table_association" "a" {
 
 
 
-//FOR LAUNCHING INSTANCE I CREATE SECURITY GROUP WITH SSH,HTTP R=INBOUND RULES
-resource "aws_security_group" "roshan_grp_r" {
+//FOR LAUNCHING INSTANCE I CREATE SECURITY GROUP WITH SSH,HTTP INBOUND RULES for mysql instance
+resource "aws_security_group" "roshan_grp_r_mysql" {
   name         = "roshan_grp_r"
   description  = "allow ssh and httpd"
   vpc_id = "${aws_vpc.mybuilding.id}"
@@ -109,7 +109,39 @@ resource "aws_security_group" "roshan_grp_r" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "roshan_sec_grp_r"
+    Name = "roshan_sec_grp_r_mysql"
+  }
+}
+  
+  
+//FOR LAUNCHING INSTANCE I CREATE SECURITY GROUP WITH SSH,HTTP INBOUND RULES for wordpress instance
+resource "aws_security_group" "roshan_grp_r_joomla" {
+  name         = "roshan_grp_r"
+  description  = "allow ssh and httpd"
+  vpc_id = "${aws_vpc.mybuilding.id}"
+
+  ingress {
+    description = "SSH Port"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "HTTPD Port"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "roshan_sec_grp_r_joomla"
   }
 }
 
@@ -119,7 +151,7 @@ resource "aws_instance" "myosweb" {
   ami           = "ami-0bf4cefb652962d41"
   instance_type = "t2.micro"
   key_name = "ros"
-  vpc_security_group_ids = [aws_security_group.roshan_grp_r.id]
+  vpc_security_group_ids = [aws_security_group.roshan_grp_r_joomla.id]
   subnet_id = aws_subnet.public_subnet.id
   tags = {
     Name = "JOOMLAA OS"
@@ -134,7 +166,7 @@ resource "aws_instance" "myosdatabase" {
   ami           = "ami-76166b19"
   instance_type = "t2.micro"
   key_name = "ros"
-  vpc_security_group_ids = [aws_security_group.roshan_grp_r.id]
+  vpc_security_group_ids = [aws_security_group.roshan_grp_r_mysql.id]
   subnet_id = aws_subnet.private_subnet.id
   tags = {
     Name = "mysql OS"
